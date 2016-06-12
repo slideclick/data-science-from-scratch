@@ -220,36 +220,13 @@ if __name__ == "__main__":
     user_interests.insert([0, "NoSQL"])
     user_interests.insert([2, "SQL"])
     user_interests.insert([2, "MySQL"])
+    user_interests.insert([1, "MySQL"])
+    user_interests.insert([3, "MySQL"])
 
     sql_users = users \
     .join(user_interests) \
-    .where(lambda row: row["interest"] == "SQL") \
-    .select(keep_columns=["name"])
+    .select(keep_columns=["name",'user_id'])
 
     print("sql users")
     print(sql_users)
     print()
-
-    def count_interests(rows):
-        """counts how many rows have non-None interests"""
-        return len([row for row in rows if row["interest"] is not None])
-
-    user_interest_counts = users \
-        .join(user_interests, left_join=True) \
-        .group_by(group_by_columns=["user_id"],
-                  aggregates={"num_interests" : count_interests })
-
-    print("user interest counts")
-    print(user_interest_counts)
-
-    # SUBQUERIES
-
-    likes_sql_user_ids = user_interests \
-        .where(lambda row: row["interest"] == "SQL") \
-        .select(keep_columns=['user_id'])
-
-    likes_sql_user_ids.group_by(group_by_columns=[],
-                                aggregates={ "min_user_id" : min_user_id })
-
-    print("likes sql user ids")
-    print(likes_sql_user_ids)
